@@ -7,4 +7,4 @@
    ```bash
    python app.py
 
-![img_1.png](img_1.png)
+<img width="899" height="474" alt="image" src="https://github.com/user-attachments/assets/d263b6bc-ab64-4aea-b9e6-48b716b53f36" />
