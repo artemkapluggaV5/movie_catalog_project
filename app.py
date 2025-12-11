@@ -1,85 +1,73 @@
 import logic
 
-FILENAME = "movies.json"
+DATA_FILE = "movies.json"
 
 
-def print_movie(movie):
-    status = "Просмотрен" if movie['watched'] else "Не просмотрен"
-    rating = f", Рейтинг: {movie['rating']}" if movie['rating'] else ""
-    print(f"[{movie['id']}] {movie['title']} ({movie['year']}) - {status}{rating}")
-
-
-def run_app():
-    movies = logic.load_movies(FILENAME)
+def main():
+    movies = logic.load_movies(DATA_FILE)
     print("Добро пожаловать в Каталог Фильмов!")
 
     while True:
         print("\n--- МЕНЮ ---")
         print("1. Показать все фильмы")
-        print("2. Показать непросмотренные фильмы")
-        print("3. Добавить фильм")
-        print("4. Отметить фильм как просмотренный (с оценкой или без)")
-        print("5. Найти фильмы по году")
+        print("2. Добавить фильм")
+        print("3. Отметить фильм как просмотренный")
+        print("4. Найти фильмы по году")
         print("0. Выход")
 
         choice = input("Выберите действие: ")
 
-        if choice == '1':
+        if choice == "1":
             if not movies:
                 print("Список пуст.")
             else:
                 for m in movies:
-                    print_movie(m)
+                    print(logic.format_movie(m))
 
-        elif choice == '2':
-            unwatched = logic.get_unwatched(movies)
-            if not unwatched:
-                print("Все фильмы просмотрены!")
-            else:
-                for m in unwatched:
-                    print_movie(m)
-
-        elif choice == '3':
+        elif choice == "2":
             title = input("Введите название фильма: ")
             try:
                 year = int(input("Введите год выпуска: "))
                 logic.add_movie(movies, title, year)
-                logic.save_movies(FILENAME, movies)
-                print("Фильм успешно добавлен!")
-            except ValueError:
-                print("Ошибка: Год должен быть числом.")
+                logic.save_movies(DATA_FILE, movies)
+                print("Фильм добавлен!")
+            except ValueError as e:
+                print("Ошибка:", e)
 
-        elif choice == '4':
-            try:
-                m_id = int(input("Введите ID фильма: "))
-                rating_input = input("Оценка (1-10) или Enter, если без оценки: ")
-                rating = int(rating_input) if rating_input else None
+        elif choice == "3":
+            if not movies:
+                print("Список пуст, отмечать нечего.")
+            else:
+                for m in movies:
+                    print(logic.format_movie(m))
+                try:
+                    m_id = int(input("Введите ID фильма: "))
+                    logic.mark_watched(movies, m_id)
+                    logic.save_movies(DATA_FILE, movies)
+                    print("Статус обновлён.")
+                except ValueError as e:
+                    print("Ошибка:", e)
 
-                logic.mark_watched(movies, m_id, rating)
-                logic.save_movies(FILENAME, movies)
-                print("Статус обновлен!")
-            except ValueError:
-                print("Ошибка: ID и оценка должны быть числами.")
-
-        elif choice == '5':
+        elif choice == "4":
             try:
                 year = int(input("Введите год для поиска: "))
                 found = logic.find_by_year(movies, year)
                 if found:
                     for m in found:
-                        print_movie(m)
+                        print(logic.format_movie(m))
                 else:
-                    print("Фильмов этого года не найдено.")
-            except ValueError:
-                print("Ошибка: введите корректный год.")
+                    print("Фильмов не найдено.")
+            except ValueError as e:
+                print("Ошибка:", e)
 
-        elif choice == '0':
-            print("До свидания!")
+        elif choice == "0":
+            logic.save_movies(DATA_FILE, movies)
+            print("До свидания")
             break
 
         else:
             print("Неверный пункт меню.")
 
 
-if __name__ == '__main__':
-    run_app()
+if __name__ == "__main__":
+    main()
