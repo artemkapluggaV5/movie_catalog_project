@@ -1,4 +1,5 @@
 from logic import load_movies, add_movie, mark_watched, find_by_year
+import pytest
 
 def test_load_movies_empty():
     result = load_movies("file_which_does_not_exist.json")
@@ -37,3 +38,32 @@ def test_find_by_year():
 
     not_found = find_by_year(movies, 1999)
     assert not_found == []
+
+def test_add_movie_negative_year():
+    movies = []
+    with pytest.raises(ValueError):
+        add_movie(movies, "BadYear", -1999)
+
+def test_add_movie_duplicate():
+    movies = []
+    add_movie(movies, "Matrix", 1999)
+
+    with pytest.raises(ValueError):
+        add_movie(movies, "Matrix", 1999)
+
+def test_mark_watched_invalid_id():
+    movies = [{"id": 1, "title": "A", "year": 2000, "watched": False}]
+
+    with pytest.raises(ValueError):
+        mark_watched(movies, 999)
+
+def test_mark_watched_negative_id():
+    movies = [{"id": 1, "title": "A", "year": 2000, "watched": False}]
+
+    with pytest.raises(ValueError):
+        mark_watched(movies, -1)
+
+def test_find_by_year_negative():
+    movies = []
+    with pytest.raises(ValueError):
+        find_by_year(movies, -2000)

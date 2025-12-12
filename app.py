@@ -52,7 +52,7 @@ def main():
                 print("Нет фильмов за этот год.")
 
         elif choice == "0":
-            save_movies(DATA_FILE, movies)
+            logic.save_movies(DATA_FILE, movies)
             print("До свидания")
             break
 

@@ -13,41 +13,50 @@ def load_movies(path: str) -> list[dict]:
 
 
 def save_movies(path: str, movies: list[dict]) -> None:
-    try:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(movies, f, ensure_ascii=False, indent=4)
-    except OSError:
-        pass
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(movies, f, ensure_ascii=False, indent=4)
 
 
-def add_movie(movies: list[dict], title: str, year: int) -> list[dict]:
-    if not movies:
-        new_id = 1
-    else:
-        new_id = max(movie["id"] for movie in movies) + 1
+def add_movie(movies: list[dict], title: str, year: int) -> None:
+    if year < 0:
+        raise ValueError("Год не может быть отрицательным")
 
-    new_movie = {
+    if check_movie_exists(movies, title, year):
+        raise ValueError("Такой фильм уже существует")
+
+    new_id = max((m["id"] for m in movies), default=0) + 1
+
+    movies.append({
         "id": new_id,
         "title": title,
         "year": year,
         "watched": False
-    }
-
-    movies.append(new_movie)
-    return movies
+    })
 
 
-def mark_watched(movies: list[dict], movie_id: int) -> list[dict]:
+def mark_watched(movies: list[dict], movie_id: int) -> None:
+    if movie_id < 0:
+        raise ValueError("ID не может быть отрицательным")
+
     for movie in movies:
         if movie["id"] == movie_id:
             movie["watched"] = True
-            break
-    return movies
+            return
+
+    raise ValueError("Фильм с таким ID не найден")
 
 
 def find_by_year(movies: list[dict], year: int) -> list[dict]:
-    result = []
-    for movie in movies:
-        if movie.get("year") == year:
-            result.append(movie)
-    return result
+    if year < 0:
+        raise ValueError("Год не может быть отрицательным")
+
+    return [m for m in movies if m["year"] == year]
+
+
+def check_movie_exists(movies, title, year):
+    return any(m["title"] == title and m["year"] == year for m in movies)
+
+
+def format_movie(movie: dict) -> str:
+    status = "Просмотрен" if movie["watched"] else "Не просмотрен"
+    return f"[{movie['id']}] {movie['title']} ({movie['year']}) - {status}"
