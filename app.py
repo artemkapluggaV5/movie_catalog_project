@@ -32,7 +32,7 @@ def main():
                 logic.save_movies(DATA_FILE, movies)
                 print("Фильм добавлен!")
             except ValueError as e:
-                print("Ошибка:", e)
+                print(f"Ошибка: {e}")
 
         elif choice == "3":
             if not movies:
@@ -44,9 +44,9 @@ def main():
                     m_id = int(input("Введите ID фильма: "))
                     logic.mark_watched(movies, m_id)
                     logic.save_movies(DATA_FILE, movies)
-                    print("Статус обновлён.")
+                    print("Операция выполнена.")
                 except ValueError as e:
-                    print("Ошибка:", e)
+                    print(f"Ошибка: {e}")
 
         elif choice == "4":
             try:
@@ -58,7 +58,7 @@ def main():
                 else:
                     print("Фильмов не найдено.")
             except ValueError as e:
-                print("Ошибка:", e)
+                print(f"Ошибка: {e}")
 
         elif choice == "0":
             logic.save_movies(DATA_FILE, movies)

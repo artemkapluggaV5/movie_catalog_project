@@ -17,7 +17,7 @@ def save_movies(path: str, movies: list[dict]) -> None:
         json.dump(movies, f, ensure_ascii=False, indent=4)
 
 
-def add_movie(movies: list[dict], title: str, year: int) -> None:
+def add_movie(movies: list[dict], title: str, year: int) -> list[dict]:
     if year < 0:
         raise ValueError("Год не может быть отрицательным")
 
@@ -32,18 +32,24 @@ def add_movie(movies: list[dict], title: str, year: int) -> None:
         "year": year,
         "watched": False
     })
+    return movies
 
 
-def mark_watched(movies: list[dict], movie_id: int) -> None:
+def mark_watched(movies: list[dict], movie_id: int) -> list[dict]:
     if movie_id < 0:
         raise ValueError("ID не может быть отрицательным")
 
+    found = False
     for movie in movies:
         if movie["id"] == movie_id:
             movie["watched"] = True
-            return
+            found = True
+            break
 
-    raise ValueError("Фильм с таким ID не найден")
+    if not found:
+        raise ValueError(f"Фильм с ID {movie_id} не найден.")
+
+    return movies
 
 
 def find_by_year(movies: list[dict], year: int) -> list[dict]:
