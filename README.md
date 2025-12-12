@@ -6,5 +6,9 @@
 2. Запустите приложение:
    ```bash
    python app.py
+   
+Для проверки работоспособности программы запустите тесты:
+   ```bash
+   pytest
 
 <img width="899" height="474" alt="image" src="https://github.com/user-attachments/assets/d263b6bc-ab64-4aea-b9e6-48b716b53f36" />
