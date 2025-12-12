@@ -1,10 +1,14 @@
-import logic
+from logic import (
+    load_movies, save_movies, show_all_movies,
+    add_movie_interactive, mark_watched_interactive,
+    find_by_year_interactive, print_movie
+)
 
 DATA_FILE = "movies.json"
 
 
 def main():
-    movies = logic.load_movies(DATA_FILE)
+    movies = load_movies(DATA_FILE)
     print("Добро пожаловать в Каталог Фильмов!")
 
     while True:
@@ -18,47 +22,34 @@ def main():
         choice = input("Выберите действие: ")
 
         if choice == "1":
-            if not movies:
-                print("Список пуст.")
-            else:
-                for m in movies:
-                    print(logic.format_movie(m))
+            show_all_movies(movies)
 
         elif choice == "2":
             title = input("Введите название фильма: ")
-            try:
-                year = int(input("Введите год выпуска: "))
-                logic.add_movie(movies, title, year)
-                logic.save_movies(DATA_FILE, movies)
+            year = input("Введите год выпуска: ")
+            if add_movie_interactive(movies, title, year):
+                save_movies(DATA_FILE, movies)
                 print("Фильм добавлен!")
-            except ValueError as e:
-                print("Ошибка:", e)
+            else:
+                print("Год должен быть положительным числом.")
 
         elif choice == "3":
-            if not movies:
-                print("Список пуст, отмечать нечего.")
+            show_all_movies(movies)
+            m_id = input("Введите ID фильма: ")
+            if mark_watched_interactive(movies, m_id):
+                save_movies(DATA_FILE, movies)
+                print("Статус обновлён")
             else:
-                for m in movies:
-                    print(logic.format_movie(m))
-                try:
-                    m_id = int(input("Введите ID фильма: "))
-                    logic.mark_watched(movies, m_id)
-                    logic.save_movies(DATA_FILE, movies)
-                    print("Статус обновлён.")
-                except ValueError as e:
-                    print("Ошибка:", e)
+                print("ID должен быть числом.")
 
         elif choice == "4":
-            try:
-                year = int(input("Введите год для поиска: "))
-                found = logic.find_by_year(movies, year)
-                if found:
-                    for m in found:
-                        print(logic.format_movie(m))
-                else:
-                    print("Фильмов не найдено.")
-            except ValueError as e:
-                print("Ошибка:", e)
+            year = input("Введите год: ")
+            found = find_by_year_interactive(movies, year)
+            if found:
+                for m in found:
+                    print_movie(m)
+            else:
+                print("Нет фильмов за этот год.")
 
         elif choice == "0":
             logic.save_movies(DATA_FILE, movies)
