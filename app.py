@@ -1,12 +1,13 @@
-from logic import load_movies, save_movies, add_movie, mark_watched, find_by_year
+from logic import (
+    load_movies, save_movies, show_all_movies,
+    add_movie_interactive, mark_watched_interactive,
+    find_by_year_interactive, print_movie
+)
 
 DATA_FILE = "movies.json"
 
-def print_movie(movie):
-    status = "Просмотрен" if movie["watched"] else "Не просмотрен"
-    print(f"[{movie['id']}] {movie['title']} ({movie['year']}) - {status}")
 
-def run_app():
+def main():
     movies = load_movies(DATA_FILE)
     print("Добро пожаловать в Каталог Фильмов!")
 
@@ -21,42 +22,34 @@ def run_app():
         choice = input("Выберите действие: ")
 
         if choice == "1":
-            if movies:
-                for m in movies:
-                    print_movie(m)
-            else:
-                print("Список пуст.")
+            show_all_movies(movies)
 
         elif choice == "2":
             title = input("Введите название фильма: ")
-            try:
-                year = int(input("Введите год выпуска: "))
-                add_movie(movies, title, year)
+            year = input("Введите год выпуска: ")
+            if add_movie_interactive(movies, title, year):
                 save_movies(DATA_FILE, movies)
                 print("Фильм добавлен!")
-            except ValueError:
-                print("Год должен быть числом.")
+            else:
+                print("Год должен быть положительным числом.")
 
         elif choice == "3":
-            try:
-                m_id = int(input("Введите ID фильма: "))
-                mark_watched(movies, m_id)
+            show_all_movies(movies)
+            m_id = input("Введите ID фильма: ")
+            if mark_watched_interactive(movies, m_id):
                 save_movies(DATA_FILE, movies)
                 print("Статус обновлён")
-            except ValueError:
+            else:
                 print("ID должен быть числом.")
 
         elif choice == "4":
-            try:
-                year = int(input("Введите год: "))
-                found = find_by_year(movies, year)
-                if found:
-                    for m in found:
-                        print_movie(m)
-                else:
-                    print("Нет фильмов за этот год.")
-            except ValueError:
-                print("Год должен быть числом.")
+            year = input("Введите год: ")
+            found = find_by_year_interactive(movies, year)
+            if found:
+                for m in found:
+                    print_movie(m)
+            else:
+                print("Нет фильмов за этот год.")
 
         elif choice == "0":
             save_movies(DATA_FILE, movies)
@@ -66,5 +59,6 @@ def run_app():
         else:
             print("Неверный пункт меню.")
 
+
 if __name__ == "__main__":
-    run_app()
+    main()
